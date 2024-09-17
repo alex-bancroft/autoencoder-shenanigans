@@ -1,1 +1,5 @@
 black
+sae-lens 
+transformer-lens
+sae-dashboard
+huggingface_hub
