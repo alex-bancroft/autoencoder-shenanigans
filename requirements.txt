@@ -1,5 +1,2 @@
 black
-sae-lens 
-transformer-lens
-sae-dashboard
-huggingface_hub
+sae-lens==3.20.4
