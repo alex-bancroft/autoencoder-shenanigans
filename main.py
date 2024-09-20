@@ -8,13 +8,13 @@ models = {
         "sae": "blocks.7.hook_resid_pre",
     },
     "gemma-2-2b": {
-        "release": "google/gemma-2-2b",
+        "release": "gemma-scope-2b-pt-mlp-canonical",
         # TODO: this is wrong
-        "sae": "24-gemmascope-mlp-16k",
+        "sae": "layer_24/width_16k/canonical",
     }
 }
 
-model_name = "gpt2-small"
+model_name = "gemma-2-2b"
 
 # Define Stuff
 device = "cuda"
@@ -105,7 +105,7 @@ features = {
         "pollutants": 1500,
     }
 }
-steering_feature = steering_feature = features[model_name]["animals"]  # Choose a feature to steer towards
+steering_feature = steering_feature = features[model_name]["pollutants"]  # Choose a feature to steer towards
 
 # Find the maximum activation for this feature
 max_act = find_max_activation(model, sae, activation_store, steering_feature)
