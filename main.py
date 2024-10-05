@@ -2,6 +2,7 @@ from tqdm import tqdm
 from functools import partial
 from sae_lens import ActivationsStore, SAE, HookedSAETransformer
 
+max_tokens = 50
 models = {
     "gpt2-small": {
         "release": "gpt2-small-res-jb",
@@ -14,7 +15,7 @@ models = {
     }
 }
 
-model_name = "gemma-2-2b"
+model_name = "gpt2-small"
 
 # Define Stuff
 device = "cuda"
@@ -69,7 +70,7 @@ def steering(activations, hook, steering_strength=1.0, steering_vector=None, max
     # Note if the feature fires anyway, we'd be adding to that here.
     return activations + max_act * steering_strength * steering_vector
 
-def generate_with_steering(model, sae, prompt, steering_feature, max_act, steering_strength=1.0, max_new_tokens=95):
+def generate_with_steering(model, sae, prompt, steering_feature, max_act, steering_strength=1.0, max_new_tokens=max_tokens):
     input_ids = model.to_tokens(prompt, prepend_bos=sae.cfg.prepend_bos)
     
     steering_vector = sae.W_dec[steering_feature].to(model.cfg.device)
@@ -105,7 +106,7 @@ features = {
         "pollutants": 1500,
     }
 }
-steering_feature = steering_feature = features[model_name]["pollutants"]  # Choose a feature to steer towards
+steering_feature = steering_feature = features[model_name]["finances"]  # Choose a feature to steer towards
 
 # Find the maximum activation for this feature
 max_act = find_max_activation(model, sae, activation_store, steering_feature)
@@ -114,10 +115,10 @@ print(f"Maximum activation for feature {steering_feature}: {max_act:.4f}")
 # note we could also get the max activation from Neuronpedia (https://www.neuronpedia.org/api-doc#tag/lookup/GET/api/feature/{modelId}/{layer}/{index})
 
 # Generate text without steering for comparison
-prompt = "The capital of Norway is"
+prompt = "The most important meal of the day is"
 normal_text = model.generate(
     prompt,
-    max_new_tokens=95, 
+    max_new_tokens=max_tokens, 
     stop_at_eos = False if device == "mps" else True,
     prepend_bos = sae.cfg.prepend_bos,
 )
